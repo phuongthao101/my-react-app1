@@ -14,10 +14,8 @@ const ColorBox = () => {
     }
 
 
-    const [color, setColor] = useState(() => {
-        const initColor = localStorage.getItem('color-box') || 'pink'
-        return initColor
-    })
+    const [color, setColor] = useState(
+       localStorage.getItem('color-box') || 'pink')
     return (
         <div>
             <button

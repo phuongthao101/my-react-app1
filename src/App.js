@@ -1,6 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import TodoList from './components/ToDoList'
 import TodoForm from './components/ToDoForm'
+import PostList from './components/PostList'
+import Pagination from './components/Pagination'
+import QueryString from 'query-string'
 // // toDoList with use State
 
 // function App() {
@@ -81,7 +84,78 @@ const App = () => {
     { id: 2, title: 'anh' },
     { id: 3, title: 'em' }
   ])
+  const [postList, setPostList] = useState([])
+  // const [pagination, setPagination] = useState({
+  //   _page: 1,
+  //   _limit: 10,
+  //   _totalRows: 11
+  // })
+  // const [filters, setFilters] = useState({
+  //   _limit: 10,
+  //   _page: 1
+  // })
+  // const paramString = QueryString.stringify(filters)
+  // const handlePageChange = (newPage) => {
+  //   console.log('new page ' + newPage)
+  //   setFilters({
+  //     ...filters,
+  //     _page: newPage
+  //   })
 
+  // }
+
+  // useEffect(() => {
+  //   try {
+  //     const fetchPostList = async () => {
+  //       const responseUrl = `http://js-post-api.herokuapp.com/api/posts?${paramString}`
+  //       const response = await fetch(responseUrl)
+  //       const responseJSON = await response.json()
+
+  //       const { data, pagination } = responseJSON
+  //       setPostList(data)
+  //       setPagination(pagination)
+  //     }
+  //     fetchPostList();
+  //   } catch (e) {
+  //     console.log('failed to fetch post list')
+  //   }
+
+  // }, [filters])
+
+  const [pagination, setPagination] = useState({
+    _limit: 10,
+    _page: 1,
+    _totalRows: 1
+  })
+  const [filters, setFilters] = useState({
+    _limit: 10,
+    _page: 1,
+  })
+  const paramString = QueryString.stringify(filters)
+
+  const handlePageChange = (newPage) => {
+    setFilters({
+      ...filters,
+      _page: newPage
+    })
+  }
+  useEffect(() => {
+
+    fetchPostList()
+  }, [filters])
+
+
+  const fetchPostList = async () => {
+    const responseURl = `http://js-post-api.herokuapp.com/api/posts?${paramString}`
+    const respone = await fetch(responseURl)
+    const responseJSON = await respone.json()
+
+    const { data, pagination } = responseJSON
+    console.log(data)
+    // set data and pagination when it change 
+    setPostList(data)
+    setPagination(pagination)
+  }
 
   const handleTodoClick = (todo) => {
     console.log(todo);
@@ -106,21 +180,30 @@ const App = () => {
     newTodoList.push(newTodo)
     setTodoList(newTodoList)
 
+
   }
   return (
     <div className='app'>
-      <TodoForm
+      <h2>Post List</h2>
+      <PostList
+        posts={postList}
+      />
+      <Pagination
+        pagination={pagination}
+        onPageChange={handlePageChange}
+      />
+
+      {/* <TodoForm
         onSubmit={handleFormSubmit}
       />
 
       <TodoList
         todos={todoList}
         onTodoClick={handleTodoClick}
-      />
+      /> */}
+
     </div>
   )
 }
-
-
 
 export default App;
